@@ -1,0 +1,341 @@
+---
+title: 'Deliverable 3: Preprocessing'
+author: "Valentine Hartman"
+date: "2026-10-15"
+output:
+  html_document: default
+---
+
+# Mission Statement
+
+>My ultimate goal for my project is to determine wether or not any patterns exist within the distribution of leased or unleased Government Properties within the United States. However, doing so requires the IOLP data to be refined into a more compact state. The following markdown outlines the preprocessing of said data.
+
+# Data Organization & Observations
+## Section 1: Presentation of Raw Data
+### Overview of Raw Data
+
+>The following block of code contains a preview of the raw data tables I have chosen for my project. While there was also a second data frames containing the dates of each property's lease, I am mainly focusing on property distribution. Therefore, I only require the first dataset, which contains every property, leased and owned. I have titled this set of data "IOLPB," which is short for IOLP Buildings. The second data frames only contains leased properties, and has been named "IOLPL," short for IOLP Leases.
+
+```{r}
+library(tidyr)
+library(dplyr)
+IOLPB<-read.csv("IOLPBuildings.csv")
+head(IOLPB,10)
+IOLPL<-read.csv("IOLPLeases.csv")
+head(IOLPL,10)
+```
+
+### Chart Dimensions
+
+>IOLPB: 7,758 observations, 18 variables
+
+>IOLPL: 7,074 observations, 19 variables
+
+
+### Data Dictionary
+
+>The following "data dictionary" serves as an overview of each variable in the data, and provides the following:
+
+>1. The variable's name.
+2. A brief description of the variable and its contents.
+3. Which of the two data-sets the variable is in ("IOLPB" or "IOLPL").
+4. The data type of the variable (categorical or numerical).
+
+>**NOTE:** Descriptions of the data can also be found on the website that I pulled the data from.
+
+>[Source of data and overview of the variables within it](https://catalog.data.gov/dataset/inventory-of-owned-and-leased-properties-iolp)
+
+#### "Location.Code"
+
+>This variable contains location codes, the GSA's method for identifying each property.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable Type: Categorial
+
+#### "Real.Property.Asset.Name"
+
+>This variable contains the name of each property. It was made with the intent of aiding viewers of the data in locating information on specific properties. A handfull of the values within this variable match their observations's entry in the "Street.Address" variable.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Categorical
+
+#### "Installation.Name"
+
+>This variable primarily consists of N/A values. The few values that it does list are meant to group together properties that are parts of specific instilations.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Categorical
+
+#### "Owned.or.Leased"
+
+>This variable seperates leased and owned properties. Its entries are all either "OWNED" or "LEASED." This data will be invaluable for determining the distribution of the two types of property across the United States.
+
+>This variable is present in: IOLPB
+
+>Variable type: Categorical
+
+#### "GSA.Region"
+
+> The GSA, the administration that curates the IOLP and locates property for government use, divides the acuisition and management of various properties among 11 districts, with each one encompassing different states. This variable organizes properties into districts using a number associated with each district.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Functionally categorical, yet displayed as numerical.
+
+#### "Street.Address"
+
+>This variable contains the street adress of the properties in the address. Some of the entries in this variable correspond with their observations's value in the "Real.Property.Asset.Name" variable.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Categorical
+
+#### "City"
+
+> This variable contains the name of the city that each property is located in.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Categorical
+
+#### "State"
+
+> This variable contains an abbreviation of the state or territory that houses each property.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Categorical
+
+#### "Zip.Code"
+
+> This variable contains each property's zip code.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: 
+
+#### "Latitude"
+
+> This variable contains the y-value of the property on the global coordinate grid.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Numerical
+
+#### "Longitude"
+
+> This variable contains the x-value of the property on the global coordinate grid.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Numerical
+
+#### "Building.Rentable.Square.Feet"
+
+> This variable displays the total rentable area of each property in square feet.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Numerical
+
+#### "Available.Square.Feet"
+
+> This variable displays the total amount of vacant square footage within a building.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Numerical
+
+#### "Construction.Date"
+
+> This variable lists the year that each property was built.
+
+>This variable is present in: IOLPB
+
+>Variable type: Numerical
+
+#### "Congressional.District"
+
+> This variable contains the congressional district each property is located within.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Numerical
+
+#### "Congressional.District.Representative.Name"
+
+> This variable contains the name of the representative in charge of the congressional district that each property is located in.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Categorical
+
+#### "Building.Status"
+
+>This variable indicates wether or not the property is actively in use.
+
+>This variable is present in: IOLPB
+
+>Variable type: Categorical
+
+#### "Real.Property.Asset.Type"
+
+> This variable displays what kind of asset is housed on each property.
+
+>This variable is present in: IOLPB, IOLPL
+
+>Variable type: Categorical
+
+#### "Lease.Number"
+
+> This variable houses the codes used by the GSA to identify each lease.
+
+>This variable is present in: IOLPL
+
+>Variable type: Numerical
+
+#### "Lease.Effective.Date"
+
+> This variable houses the date that the lease of each leased property was established.
+
+>This variable is present in: IOLPL
+
+>Variable type: Numerical
+
+#### "Lease.Expiration.Date"
+
+> This variable houses the date that the lease of each leased property expires.
+
+>This variable is present in: IOLPL
+
+>Variable type: Numerical
+
+### Raw Data Cleanliness Assessment
+
+>The current state of the data seems somewhat well organized. Every property has a corresponding coordinate grid entry and state, which are the two main variables I had in mind when initially designing my project. However, many of the more specific variables, such as the values within the "Congressional.District.Representatives.Name" and "Instillation.Name" variables seem to primarily consist of N/A values. This makes sense, as not all properties are part of specific instillations.
+
+>Certain variables also seem to contain high levels of repitition. For example, every ovservation of the "Real.Property.Asset.Type" variable is a building, and every property is labled "active" according to the "Building.Status" variable. While variables like this display valid information and have obvious purposes, they will not necisarily help me inderstand the general concentration of properties.
+
+>Thankfully, as my project mainly focuses on the general distribution of the properties within the IOLP, I will not need variables regarding finer details or specific identification.
+
+## Section 2: Filtration of Data
+### Processing plan
+
+>While cleaning my data, it is important for me to keep in mind that I will only need to make use of specific variables. The most important variables for my current primary objective are the state, coordinates, and whether each property is owned or leased.
+
+>I also plan to keep the location code variable so I can properly identify the properties should the need arise. I will not be including the "Real.Property.Asset.Name" variable, as such a variable would only serve a concrete function in an interactive chart or the identification of specific properties. Due to the high density of observations in the IOLP and the nature of my project, I simply don't feel like such specific identification is neccessary in this context. It is for this same reason that I also do not plan to make use of variables such as "Construction.Date", "Building.Rentable.Square.Feet", or "Street.Address". These variables were intended to provide specific details that are simply not relevant when considering property distribution across the entire United States.
+
+>Furthermore, I will need to remove certain observations from both charts, as some of the properties listed in the IOLP lie outside of the United States, and are therefore irrelevant to my final results. However, since Washington DC counts as a U.S. territory, I will leave it in.
+
+>Finally, I will include both the City and GSA region region in my final data. I can use these variables to look for more specific relationships property distribution.
+
+> As for the data frames themselves, I will primarily be using IOLPB for future maps, as it contains all the properties. However, I will still make use of IOLPL, as it saves me the trouble of having to seperate the leased and owned values within IOLPB. The charts will first be seperated into simpler charts that arrange their area codes in descending order and filter out unnessecary variables such as name and lease expiration date. After that, I can simplify the data into as many smaller tables as I deem nessecary.
+
+### Code
+####Removal of Territories
+
+>The following code removes US territories from IOLPB and IOLPL, saving them as new data frames labled IOLPBUS and IOLPLUS respectively. This is accomplished by using the filter function selecting values within the state column that are not equal to US territories, except for Washington DC.
+
+>**NOTE**The territories being removed are American Samoa, Guam, the Northern Mariana Islands, Puerto Rico, and the US Virgin Islands. This is 5 territories in total.
+
+```{r}
+IOLPBUS<-IOLPB%>%filter(State!="AS"&State!="GU"&State!="MP"&State!="PR"&State!="VI")
+IOLPLUS<-IOLPL%>%filter(State!="AS"&State!="GU"&State!="MP"&State!="PR"&State!="VI")
+```
+####Selection of Variables
+
+>Now that I have refined both data frames to only contain values within the United States, my next step is to select the specific variables that I will be using. My reasoning for which variables I will be keeping can be seen in both the "Processing Plan" segment.
+
+>The variables will be stored in data frames named IOLPBUSR and IOLPLUSR.
+
+>**VARIABLES BEING KEPT**  
+1. Location.Code
+2. State
+3. Latitude
+4. Longitude
+5. Owned.or.Leased (not present in IOLPLUS)
+6. City
+
+```{r}
+IOLPBUSR<-IOLPBUS%>%select(Location.Code, Latitude, Longitude, State, Owned.or.Leased, City, GSA.Region)
+IOLPLUSR<-IOLPLUS%>%select(Location.Code, Latitude, Longitude, State, City, GSA.Region)
+```
+#### Final Seperation and Naming of Data Frames
+
+>The last thing I plan to do in the processing of my data is to create one final data frame from IOLPBUSR that contains only the owned properties, then rename each data frame to a more suitable name, ultimately giving me one data frame that contains all the properties, and two data frames that only contain leased or owned properties. This will allow for maximum ease in sorting through the values.
+
+```{r}
+IOLP.all<-IOLPBUSR
+IOLP.owned<-(IOLPBUSR%>%filter(Owned.or.Leased=="OWNED")%>%select(-Owned.or.Leased))
+IOLP.leased<-IOLPLUSR
+head(IOLP.all,10)
+head(IOLP.owned,10)
+head(IOLP.leased,10)
+```
+
+
+### Final Chart Dimensions
+
+IOLP.all: 7,659 observations, 7 variables
+IOLP.leased: 6,946 observations, 6 variables
+IOLP.owned: 1,670 observations, 6 variables
+
+## Section 3: Observations of Refined Data
+### Summary Statistics
+####Property Distribution Among States
+
+>The following table displays the distributions of properties among states, with seerate charts for owned properties, leased properties, and all properties. Due to the odd formatting that resulted from the quantity of states, the charts have been made interactive for easier viewing.
+
+```{r}
+library(ggplot2)
+library(plotly)
+statesbar<-ggplot(IOLP.all%>%group_by(State)%>%summarise(Property.Density=n())%>%arrange(-Property.Density))+geom_col(aes(x=State,y=Property.Density))+coord_flip()+labs(x="State", y="Government Proprerties", title="Property per. State (Total)")
+ggplotly(statesbar)
+
+statesbar2<-ggplot(IOLP.leased%>%group_by(State)%>%summarise(Property.Density=n())%>%arrange(-Property.Density))+geom_col(aes(x=State,y=Property.Density))+coord_flip()+labs(x="State", y="Government Proprerties", title="Property per. State (Leased)")
+ggplotly(statesbar2) 
+
+statesbar3<-ggplot(IOLP.owned%>%group_by(State)%>%summarise(Property.Density=n())%>%arrange(-Property.Density))+geom_col(aes(x=State,y=Property.Density))+coord_flip()+labs(x="State", y="Government Proprerties", title="Property per. State (Owned)")
+ggplotly(statesbar3)
+```
+
+####Property Distribution Among Cities
+
+>In the following table, I located the quantity of total properties within certain cities, as well as what percentage of total property is within each city. Due to the large quantity of cities in the IOLP, I have presented the information in a table rather than a graph. Should the distribution of properties among states prove to be too underwhelming, this should allow me to notice whether or not any patterns exist in the distributions of government properties among cities, as larger cities in specific states may possess particularily large amounts of property.
+
+>Like the previous graph, I have calculated seperate visuals for total property, owned property, and leased property.
+
+>Due to the very large number of cities within the IOLP, I have arranged them into ta
+
+```{r}
+IOLP.all.state<-IOLP.all%>%group_by(City)%>%summarize(prop.density=n())%>%arrange(-prop.density)%>%mutate(precent=(((prop.density/(sum(prop.density)))*100)))%>%mutate(percent=round(precent,2))%>%select(City,prop.density,percent)
+head(IOLP.all.state,10)
+
+IOLP.leased.state<-IOLP.leased%>%group_by(City)%>%summarize(prop.density=n())%>%arrange(-prop.density)%>%mutate(precent=(((prop.density/(sum(prop.density)))*100)))%>%mutate(percent=round(precent,2))%>%select(City,prop.density,percent)
+head(IOLP.leased.state,10)
+
+IOLP.owned.state<-IOLP.owned%>%group_by(City)%>%summarize(prop.density=n())%>%arrange(-prop.density)%>%mutate(precent=(((prop.density/(sum(prop.density)))*100)))%>%mutate(percent=round(precent,2))%>%select(City,prop.density,percent)
+head(IOLP.owned.state,10)
+```
+
+####Property Distribution Among GSA Regions
+>This chart displays the amount of states within each congressional district. This will grant me access to more aspects of the data to compare. I plan to eventually compare the amount of cities within states and GSA districts to the amount of properties within states and GSA districts. Doing so will allow me to see if the GSA regions were chosen for a specific region, such as the amount of properties within them or the amount of cities within them.
+
+```{r}
+ggplotly(ggplot(IOLP.all%>%group_by(GSA.Region)%>%summarize(Property.Density=n())%>%arrange(-GSA.Region))+geom_col(aes(x=GSA.Region,y=Property.Density))+labs(x="GSA Region", y="Properties Within Region", title="GSA Property Distribution Among Its Regions (all)"))
+
+ggplotly(ggplot(IOLP.leased%>%group_by(GSA.Region)%>%summarize(Property.Density=n())%>%arrange(-GSA.Region))+geom_col(aes(x=GSA.Region,y=Property.Density))+labs(x="GSA Region", y="Properties Within Region", title="GSA Property Distribution Among Its Regions (Leased)"))
+
+ggplotly(ggplot(IOLP.owned%>%group_by(GSA.Region)%>%summarize(Property.Density=n())%>%arrange(-GSA.Region))+geom_col(aes(x=GSA.Region,y=Property.Density))+labs(x="GSA Region", y="Properties Within Region", title="GSA Property Distribution Among Its Regions (Owned)"))
+```
+
+
+# Discussion
+
+>Now that I have properly combed through the data, I have come to truly comprehend its massive scope. The IOLP is intended to organize GSA property, and therefore several variables are included within it, allowing it to answer as many theoretical questions as it possibly can. It is because of this intricacy that I have begun to feel a bit self concious of my project's original scope. However, Many of the variables refer to very specific factors, such as square footage available and the individual in charge of their congressional district. While such variables offer a plethora of intriguing data, they simply aren't relevent to my project's current scope, which is not necessarily a bad thing. If I worry about this too much, I will only 
+>as for the variables that are more relevant for my objectives, I can already begin to see noticable trends in them. For example, Washington DC has only the third most total property out of all the states, while it has the most owned property out of all the states. This makes sense, as since DC houses our national capital, it would require the most full-time infrastructure. I also noticed that Texas has the most total property, and California contains the most leased property. While this detail does fascinate me, I will need to construct a map with this data before I am able to tell whether or not this means anything in relation to other states. In a simmilar vein, GSA region 4 has the most total property and leased property, but GSA 12 has the most owned property. This means the assigned number of each GSA region is not coorelated to the quantity of properties within it.
+
+>My next primary goal is still the creation of maps. I plan to use the "Leaflet" package to create maps to display the differences in the distribution of all properties in the IOLP, the leased properties, and the owned properties. However, I will also use the City and GSA region variables to look for further comparisons in the data, and figure out if the size of GSA regions has anything to do with the amount of cities, states, or properties within a certain area. This data will not only open up opportunities for future research, but also theoretically allow the GSA and federal government to look through the density of their properties and decide wether or not they lack or have an excess of infrastructure in specific locations Furthermore, during the creation of these maps, I may have to remove DC from the properties considered in it, as the values associated with DC may be improperly processed during map creation. This shouldn't be too consequential, as I can already the reasoning behind the property distribution in DC. Furthermore, I can still include it in a map displaying scattered points.
