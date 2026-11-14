@@ -1,0 +1,363 @@
+---
+title: 'Deliverable 5: Final Draft'
+author: "Valentine Hartman"
+date: "2026-11-14"
+output:
+  html_document: default
+---
+## Libraries
+
+```{r}
+library("dplyr") #Used for manipulating various instances of the data to make it easier to process
+library("tidyr") #Used to re-arrange specific variables, making them easier to plot
+library("ggplot2") #Used to create proper visual representations of my work, both charts and maps
+library("plotly") #Used to make certain visuals and charts with small or hard to view details easier to understand
+```
+## Summary
+
+> In this project, I took a data set of buildings from the IOLP, a database of properties owned and leased by the American government, and attempted to find patterns in the data regarding each building within it. I explored a handfull of the variables regarding each building, including their geographic location, date of construction, and the rentable and available space of each building in terms of square footage. By the end of my project, I had found a handfull of patterns in the data. There was a noticeable density of buildings near the Eastern side of the country, as well as a handfull of government-owned buildings strung across the Northern and Southern borders. There was also an incredibly high density of both owned and leased government buildings in Texas and California, which even surpassed the amount of government buildings in America's capital.
+
+> As for the other variables, I also managed to locate some somewhat interesting patterns. The owned and leased buildings seemed to possess little rentable or available space, and posessed many N/A values. Many owned government buildings were built in the late 1980s, and only data regarding owned properties was present, as all the leased propeerties simply had N/A values for their construction date. There was also a high R value produced by testing the relationship between the available and rentable space of owned properties. Sadly, there was no data within my dataset that served to properly explain any coorelation or cause for these trends. 
+
+## Purpose
+>My goal for this project is to find any kind of pattern in the geographic placement of government buildings. I also aim to try and find patterns in the other data regarding these buildings, such as the date of their construction, or the amount of available and rentable square footage within them.
+
+## Data
+### Data Dictionary
+
+>The following "data dictionary" serves as an overview of each variable from the data's original state, and provides the following:
+
+>1. The variable's name.
+2. A brief description of the variable and its contents.
+3. The data type of the variable (categorical or numerical).
+4. The specific measurement units of the variable, if it has them.
+
+>**NOTE:** Descriptions of the data can also be found on the website that I pulled the data from.
+
+>[Source of data and overview of the variables within it](https://catalog.data.gov/dataset/inventory-of-owned-and-leased-properties-iolp)
+
+#### "Location.Code"
+
+>This variable contains location codes, the GSA's method for identifying each property.
+
+>Variable Type: Categorial
+
+>Unit of measurement: None
+
+#### "Real.Property.Asset.Name"
+
+>This variable contains the name of each building It was made with the intent of aiding viewers of the data in locating information on specific properties. A handfull of the values within this variable match their observations's entry in the "Street.Address" variable.
+
+>Variable type: Categorical
+
+>Unit of measurement: None
+
+#### "Installation.Name"
+
+>This variable primarily consists of N/A values. The few values that it does list are meant to group together buildings that are parts of specific instilations.
+
+>Variable type: Categorical
+
+>Unit of measurement: None
+
+#### "Owned.or.Leased"
+
+>This variable seperates leased and owned buildings. Its entries are all either "OWNED" or "LEASED." This data will be invaluable for determining the distribution of the two types of buildings across the United States.
+
+>Variable type: Categorical
+
+>Unit of measurement: None
+
+#### "GSA.Region"
+
+> The GSA, the administration that curates the IOLP and locates property for government use, divides the acuisition and management of various buildings among 11 districts, with each one encompassing different states. This variable organizes buildings into districts using a number associated with each district.
+
+>Variable type: Numerical
+
+>Unit of measurement: None
+
+#### "Street.Address"
+
+>This variable contains the street adress of the buildings in the address. Some of the entries in this variable correspond with their observations's value in the "Real.Property.Asset.Name" variable.
+
+>Variable type: Categorical
+
+>Unit of measurement: None
+
+#### "City"
+
+>This variable contains the name of the city that each property is located in.
+
+>Variable type: Categorical
+
+>Unit of measurement: None
+
+#### "State"
+
+>This variable contains an abbreviation of the state or territory that houses each building.
+
+>Variable type: Categorical
+
+>Unit of measurement: None
+
+#### "Zip.Code"
+
+>This variable contains each building's zip code.
+
+>Variable type: Numerical
+
+>Unit of measurement: None
+
+#### "Latitude"
+
+>This variable contains the y-value of each building on the global coordinate grid.
+
+>Variable type: Numerical
+
+>Unit of measurement: None
+
+#### "Longitude"
+
+> This variable contains the x-value of each building on the global coordinate grid.
+
+>Variable type: Numerical
+
+>Unit of measurement: None
+
+#### "Building.Rentable.Square.Feet"
+
+>This variable displays the total rentable area of each building in square feet.
+
+>Variable type: Numerical
+
+>Unit of measurement: Square feet
+
+#### "Available.Square.Feet"
+
+>This variable displays the total amount of vacant square footage within a building.
+
+>Variable type: Numerical
+
+>Unit of measurement: Square feet
+
+#### "Construction.Date"
+
+>This variable lists the year that each building was built, in the form of a 4-digit number representing the number of days since January 1st of 1970.
+
+>Variable type: Date (numerical)
+
+>Unit of measurement: None
+
+
+#### "Congressional.District"
+
+>This variable contains the congressional district each building is located within. 
+
+>Variable type: Numerical
+
+>Unit of measurement: None
+
+#### "Congressional.District.Representative.Name"
+
+>This variable contains the name of the representative in charge of the congressional district that each building is located in.
+
+>Variable type: Categorical
+
+>Unit of measurement: None
+
+#### "Building.Status"
+
+>This variable indicates wether or not the building is actively in use.
+
+>Variable type: Categorical
+
+>Unit of measurement: None
+
+#### "Real.Property.Asset.Type"
+
+>This variable displays what kind of asset is housed on each property. All of the entries in the data are listed as buildings, which I later realized meant that all of the properties in my data set were buildings, rather than a variety of property types. I altered the wording of my project to reflect this.
+
+>Variable type: Categorical
+
+>Unit of measurement: None
+
+
+
+### N/A values in my data
+#### Available.Square.Feet
+
+> One of the most glaring examples of N/A values in my data was the available square footage variable, where 5,721 variables were listed as N/A. These values were left in, as I figured it was completely possible for a government building to not have any vacant space within itself.
+
+#### Construction.Date
+
+> The construction date variable contained about 5,992 N/A observations. I left them in, as my core data goals didn't nessecarily require the date. Furthermore, the fact that this density of N/A values was exclusively tied to the leased buildings seemed very worthy of note.
+
+#### Congressional.District
+
+> The construction date only had one singular N/A observation. I left it in, as it was only one singular observation alongside a total 7,659 observations. Since I was only looking for general trends and patterns, I figured that a singular value wouldn't skew any observations that much.
+
+### Data Cleaning
+
+> To properly prepare the data for exploration, I used the "filter" function to remove values referring to U.S. territories, Hawaii, and Alaska. While these were part of America, I wanted to focus only on the central 49 states, as those would be easier to map and locate patterns within. I saved this as "IOLPBUS".
+
+> I also used the "Owned.or.Leased" variable to properly sort the buildings into ones that were officially owned by the government and ones that were simply being leased by it via the filter and sort functions. I stored these variables as "IOLP.owned" and "IOLP.leased." I also renamed IOLPB to "IOLP.all" to make future data more manageable. I removed the Owned.or.Leased variable from both IOLP.owned and IOLP.leased after creating them, as they were already sorted in this state, making that variable pointless in their current states.
+
+> Finally, I used the mutate function and as.Date function to turn the 4-digit format of the construction date into a proper date format. This way, I could also test if there was any pattern in the date the buildings were constructed.
+
+
+### Code for Data Cleaning
+> This code contains the cleaning of my data as mentioned in the previous section.
+
+```{r}
+IOLPB<-read.csv("IOLPBuildings.csv")
+IOLPBUS<-IOLPB%>%filter(State!="AS"&State!="GU"&State!="MP"&State!="PR"&State!="VI"&State!="CU")
+IOLP.all<-IOLPBUS
+IOLP.owned<-(IOLPBUS%>%filter(Owned.or.Leased=="OWNED")%>%select(-Owned.or.Leased))
+IOLP.leased<-(IOLPBUS%>%filter(Owned.or.Leased=="LEASED")%>%select(-Owned.or.Leased))
+IOLP.all <- IOLP.all %>%
+mutate(Construction.Date = as.Date(Construction.Date, origin = "1970-01-01"))
+IOLP.owned <- IOLP.owned %>%
+mutate(Construction.Date = as.Date(Construction.Date, origin = "1970-01-01"))
+IOLP.leased <- IOLP.leased %>%
+mutate(Construction.Date = as.Date(Construction.Date, origin = "1970-01-01"))
+head(IOLP.all,10)
+head(IOLP.owned,10)
+head(IOLP.leased,10)
+```
+
+> Final Dimensions of Base Data Sets:
+> IOLP.all: 7,659 observations, 18 variables
+> IOLP.owned: 1,670 observations, 17 variables
+> IOLP.leased: 5,989 observations, 17 variables
+
+## Exploratory Data Analysis
+### Total Concentration of buildings per. state
+
+```{r}
+statesbar.all<-IOLP.all%>%group_by(State)%>%summarise(Property.Density=n())%>%arrange(-Property.Density)%>%mutate(state = State)
+IOLP.all.and.Statesbars<-full_join(IOLP.all, statesbar.all, by = "State") 
+propdist<-(ggplot(IOLP.all.and.Statesbars) +
+geom_bar(aes(x = State, fill = Owned.or.Leased))+scale_fill_manual(values = c(
+"LEASED" = "blue","OWNED" = "orange"))+coord_flip()+labs(x="State", y="Government Buildings", title="Total Government Building Distribution Among States"))
+ggplotly(propdist)
+statesbar.all
+```
+> This chart is one of the first ones that I made in my exploration of the data, and was designed to help me get a general idea of the locations of government buildings before the creation of proper maps. It was here that I realized that Texas and California had incredibly high concentrations of government buildings, while DC had the highest concentration of owned buildings. Also shown is a simple table of the states organized by their building density.
+
+### Observation of Building Construction Dates
+
+```{r}
+ggplot(IOLP.owned)+geom_histogram(aes(x = Construction.Date,),fill="orange") + labs(x= "Date", y="Buildings",title="Owned Building Date Distribution")
+```
+
+> While the date of construction for each of the buildings was not my original point of focus for my project, I later decided to look into them via histogram. However, it is through this examination that I realized that none of the leased buildings in the database have a construction date listed. I also noticed a signifigant spike in the construction date of the buildings within the late 80s, followed by a gradual dip throughout the 1990s.
+
+### Available and Rentable Square Footage of Buildings
+
+```{r}
+ggplot(IOLP.all, aes(x = Building.Rentable.Square.Feet, y = Available.Square.Feet, color = Owned.or.Leased)) + geom_point(alpha = .3) + geom_smooth(method = "lm", se = FALSE) + scale_color_manual(values = c("LEASED" = "blue", "OWNED" = "orange")) + 
+  labs(x = "Rentable Square Feet", y = "Available Square Feet",
+title = "Relationship between Rentable and Available Square Feet (Owned and Leased)",
+color = "Ownership")
+
+ggplot(IOLP.all, aes(x = Building.Rentable.Square.Feet, y =Available.Square.Feet )) +
+  geom_point(alpha=.3)+
+  geom_smooth(method = "lm", se = FALSE, color="black") + scale_color_manual(values = c("LEASED" = "blue", "OWNED" = "orange"))+
+  labs(x = "Rentable Square Feet", y = "Available Square Feet",
+       title = "Relationship between Rentable and Available Square Feet (Total)")
+
+cor(IOLP.all$Building.Rentable.Square.Feet, IOLP.all$Available.Square.Feet,use = "complete.obs")
+cor(IOLP.leased$Building.Rentable.Square.Feet, IOLP.leased$Available.Square.Feet,use = "complete.obs")
+cor(IOLP.owned$Building.Rentable.Square.Feet, IOLP.owned$Available.Square.Feet,use = "complete.obs")
+
+Square.Footage.Coorelations<-data.frame(Owned.or.Leased=c("Both Property Types", "Leased Property Only", "Owned Property Only"), r.value=c(0.3711299, 0.3746012, 0.5668776))
+
+Square.Footage.Coorelations
+```
+
+> These charts show the relationships between the rentable and available square footage of each government building. These variables both show moderate coorelation. The total r value of both owned and leased buildings sits at 0.371, the leased buildings sit at 0.375, and the owned buildings sit at 0.657. Furthermore, many of the buildings sit very close to zero available and rentable square feet. This may be connected to the low amount of vacant or rentable space within government buildings that are actively in use.
+
+### Map of States with Density of Buildings
+```{r}
+state_counts <- IOLP.all %>%
+count(State, name = "buildings") %>%
+mutate(region = tolower(state.name[match(State, state.abb)]))
+
+state_shape <- map_data("state") %>%
+left_join(state_counts, by = "region")
+
+ggplot(state_shape, aes(x = long, y = lat, group = group, fill = buildings)) +
+geom_polygon(color = "white") +
+coord_map() +
+labs(title = "Building Distribution Across America", fill = "Buildings")
+
+
+state_countsB <- IOLP.all %>%
+count(State, name = "buildings") %>% filter(State!="CA"&State!="TX"&State!="DC")%>%
+mutate(region = tolower(state.name[match(State, state.abb)]))
+
+state_shapeB <- map_data("state") %>%
+left_join(state_countsB, by = "region")
+
+ggplot(state_shapeB, aes(x = long, y = lat, group = group, fill = buildings)) +
+geom_polygon(color = "white") +
+coord_map() +
+labs(title = "Building Distribution Across America Disregarding Outliers", fill = "Buildings")
+```
+> This map was the first one that I created, showing each state in America, with the amount of properties within each state shown via a gradient. As the previous bar chart showed, Texas and California have the most government buildings in total. I then tried creating a map that disregarded these states so I could see how the gradient appeared without them, and noticed that there was a somewhat noticeable concentration of buildings near the Eastern side of America.
+
+### Map of States Reflecting Exact Building Placement
+
+```{r}
+state_shape <- map_data("state")
+
+ggplot() +
+geom_polygon(data = state_shape, aes(x = long, y = lat, group = group),
+fill = "grey85", color = "white") +
+geom_point(data = filter(IOLP.leased, State != "AK" & State != "HI"),
+aes(x = Longitude, y = Latitude, color = "Leased")) +
+geom_point(data = filter(IOLP.owned, State != "AK" & State != "HI"),
+aes(x = Longitude, y = Latitude, color = "Owned")) +
+scale_color_manual(values = c("Leased" = "blue", "Owned" = "orange")) +
+coord_map() +
+labs(title = "Owned and Leased Property Distribution",
+x = "Longitude", y = "Latitude", color = "Building Type")
+```
+
+> This map was my final and most important map, as it shows the distribution of all the government buildings across the United States by their coordinates. Not only did I notice that there was a noticible density near the eastern side of the United states, I also noticed that there were many owned buildings along the Northern and Southern borders of the country, meaning that the government primarily owns the facilities responsible for border control.
+
+## Results
+### Analysis Methods
+> For my analysis, I primarily employed the group_by and summarize functions to create smaller tables from IOLP.all, IOLP.leased, and IOLP.owned, allowing me to compare the buildings with various criteria such as how many were within each state, or how many were buit within specific years.
+
+> From there, I employed functions within ggplot2 and plotly to create maps that displayed the locations of the property, allowing me to clearly see any kind of coorelation. 
+
+> While I did test for other patterns via a linear model for the available and rentable square footage for each building, the resulting data seemed noticeably lackluster. The histogram compared all the properties within a set to dates simultaniously, allowing me to see if specific dates had higher amounts.
+
+### Overall Description of Findings
+
+> My first primary finding was that the amount of buildings within the states of Texas and California were greater than those in DC, the nation's capital, which I found slightly odd. Then, when looking at the construction dates of the owned and leased properties, not only was there a noticeable spike of owned buildings being made in the late 1980s, but there was also no construction date tied to any of the values within the list of leased buildings. When comparing the available and rentable square footage values for the buildings, I found that many of the buildings, both the owned and leased, posessed N/A values in both categories. Those that didn't still tended to have very low quantities of rentable or available square footage, with many owned buildings lacking any kind of available square footage. Despite this, the owned properties had a higher R value in this category than both the leased and total buildings, implying that there is a stronger coorelation among the rentable and available square footage of these buildings.
+
+> Finally, in terms of the actual placement of buildings, I found that many buildings were located at borders, and were relatively closer together near the Eastern side of the United States. This proved that there was, in fact, some level of pattern in the placement of buildings. In summation, there are distinct patterns in multiple factors regarding the government buildings mentioned in the IOLP.
+
+## Conclusions
+### Key Findings
+
+> 1. As seen in the map of the states and the bar chart of the buildings per state, the five states (or districts within the primary 49 states) with the highest total amount of Government buildings in descending order are Texas, California, Washington DC, Florida, and Virginia.
+2. As seen in the map of the individual buildings scattered across the country, there are a handfull of owned properties sitting directly at the north and south borders of the country, where it connects to Canada and Mexico respectively.
+3. A noticeable density of properties is located near the Eastern side of the country.
+4. Over 200 of the owned government buildings in the IOLP were constructed near the end of the 1980s, as seen in the histogram of each building's construction date.
+5. There is a 0.57 R value in the comparison between the available and rentable square footage of the owned buildings, which is higher than the R values of both the total and leased buildings.
+6. Many of the owned and leased buildings have very little available square footage, as seen on the linear plot.
+
+### Limitations and Future Actions
+
+> While I was able to locate many patterns in the data from the IOLP, I was unfortunately limited by its purpose. The IOLP was made to offer information regarding government properties to individuals who may have wanted to locate or buy these properties. As a result, while it contains a wealth of diverse information regarding the buildings that I've observed, I am unable to tell if any of these patterns coorelate with specific statistics. For example, while I theorize that the population and small size of the states may have something to do with the amount of government buildings within them, I am simply unable to tell for sure without looking at external data sets regarding each state's population or size with only the data in the IOLP. Furthermore, while I can speculate upon the purpose of the large quantities of N/A values within certain variables, I am unable to tell what variables or executive decisions ultimately caused these values to be left blank.
+
+> My findings would ultimately be best put to use in driving further research into the external qualities of each variable. For example, someone could inspect the handfull of owned government properties located along the Northern and Southern borders to see whether or not they are associated with border control, or look into the events of the late 1980s that prompted the construction of many owned government buildings. Once the patterns that I've identified could be properly explained, the resulting data could be put to work in determining whether or not the GSA should acquire more or less properties in specific areas to maintain an amount of Government infrastructure that would be beneficial to the people within them.
+
+## References
+
+> "Programming Skills for Data Science Start Writing Code to Wrangle, Analyze, and Visualize Data with R" by Michael Freeman and Joel Ross
+
+> The Inventory of Owned and Leased Properties (IOLP), obtained via [Data.gov](https://catalog.data.gov/dataset/inventory-of-owned-and-leased-properties-iolp?from_hint=eyJxIjoicHJvcGVydHkiLCJzb3J0IjoicG9wdWxhcml0eSJ9)
