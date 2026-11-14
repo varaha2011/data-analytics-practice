@@ -359,3 +359,8 @@ x = "Longitude", y = "Latitude", color = "Building Type")
 > "Programming Skills for Data Science Start Writing Code to Wrangle, Analyze, and Visualize Data with R" by Michael Freeman and Joel Ross
 
 > The Inventory of Owned and Leased Properties (IOLP), obtained via [Data.gov](https://catalog.data.gov/dataset/inventory-of-owned-and-leased-properties-iolp?from_hint=eyJxIjoicHJvcGVydHkiLCJzb3J0IjoicG9wdWxhcml0eSJ9)
+
+REFERENCES
+> [This website](https://www.faa.gov/air_traffic/publications/atpubs/cnt_html/appendix_a.html) allowed me reference to the abbreviations of each state and territory, making the removal of certain states and territories easier.
+
+> [The GSA's website](- https://www.gsa.gov/) gave me insight into the GSA, the administration behind the data I was using.
