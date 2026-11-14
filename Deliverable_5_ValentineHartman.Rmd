@@ -181,8 +181,6 @@ library("plotly") #Used to make certain visuals and charts with small or hard to
 
 >Unit of measurement: None
 
-
-
 ### N/A values in my data
 #### Available.Square.Feet
 
@@ -198,7 +196,7 @@ library("plotly") #Used to make certain visuals and charts with small or hard to
 
 ### Data Cleaning
 
-> To properly prepare the data for exploration, I used the "filter" function to remove values referring to U.S. territories, Hawaii, and Alaska. While these were part of America, I wanted to focus only on the central 49 states, as those would be easier to map and locate patterns within. I saved this as "IOLPBUS".
+> To properly sort the buildings in my data set, I used the "filter" function to remove values referring to U.S. territories, Hawaii, and Alaska. While these were part of America, I wanted to focus only on the central 49 states, as those would be easier to map and locate patterns within. I saved this as "IOLPBUS".
 
 > I also used the "Owned.or.Leased" variable to properly sort the buildings into ones that were officially owned by the government and ones that were simply being leased by it via the filter and sort functions. I stored these variables as "IOLP.owned" and "IOLP.leased." I also renamed IOLPB to "IOLP.all" to make future data more manageable. I removed the Owned.or.Leased variable from both IOLP.owned and IOLP.leased after creating them, as they were already sorted in this state, making that variable pointless in their current states.
 
